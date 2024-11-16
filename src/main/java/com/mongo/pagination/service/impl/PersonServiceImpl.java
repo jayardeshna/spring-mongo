@@ -2,10 +2,12 @@ package com.mongo.pagination.service.impl;
 
 import com.mongo.pagination.model.DataTableResponse;
 import com.mongo.pagination.model.Person;
-import com.mongo.pagination.repository.PersonRepository;
+import com.mongo.pagination.repository.primary.PersonRepositoryPrimary;
+import com.mongo.pagination.repository.secondary.PersonRepositorySecondary;
 import com.mongo.pagination.service.PersonService;
 import com.mongo.pagination.transfer.UserTransfer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +23,18 @@ import java.util.stream.Collectors;
 public class PersonServiceImpl implements PersonService {
 
     @Autowired
-    private PersonRepository personRepository;
+    private PersonRepositoryPrimary personRepositoryPrimary;
 
     @Autowired
-    private MongoTemplate mongoTemplate;
+    private PersonRepositorySecondary personRepositorySecondary;
+
+    @Autowired
+    @Qualifier("primaryMongoTemplate")
+    private MongoTemplate primaryMongoTemplate;
+
+    @Autowired
+    @Qualifier("secondaryMongoTemplate")
+    private MongoTemplate secondaryMongoTemplate;
 
 
     @Override
@@ -36,13 +46,13 @@ public class PersonServiceImpl implements PersonService {
             person.setLastName(userTransfer.getLastName());
             return person;
         }).collect(Collectors.toList());
-        personRepository.saveAll(personList);
+        personRepositorySecondary.saveAll(personList);
     }
 
     @Override
     public DataTableResponse getPaginatedPersons(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Person> users =  personRepository.findAll(pageable);
+        Page<Person> users =  personRepositoryPrimary.findAll(pageable);
         DataTableResponse data = new DataTableResponse();
         data.setData(users.getContent());
         data.setRecordsTotal(users.getTotalElements());
@@ -57,6 +67,6 @@ public class PersonServiceImpl implements PersonService {
             query.addCriteria(Criteria.where("_id").gt(cursor));
         }
         query.limit(size);
-        return mongoTemplate.find(query, Person.class);
+        return primaryMongoTemplate.find(query, Person.class);
     }
 }

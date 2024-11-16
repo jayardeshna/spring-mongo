@@ -1,5 +1,7 @@
 spring:
   data:
     mongodb:
-      uri: mongodb://localhost:27017/demo
-      auto-index-creation: true
+      primary:
+        uri: mongodb://localhost:27017/demo
+      secondary:
+        uri: mongodb://localhost:27017/new_demo
