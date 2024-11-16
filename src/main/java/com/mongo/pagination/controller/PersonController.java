@@ -21,6 +21,19 @@ public class PersonController {
         return new RestResponse();
     }
 
+    @GetMapping("/transfer-data-offset")
+    RestResponse transferDataUsingOffset(@RequestParam(defaultValue = "10") int size){
+        personService.transferDataWithOffset(size);
+        return new RestResponse(true, "data transferred successfully");
+    }
+
+    @GetMapping("/transfer-data-cursor")
+    RestResponse transferDataUsingCursor(@RequestParam(defaultValue = "10") int size,
+                                         @RequestParam(required = false) String cursor){
+        personService.transferDataWithCursor(size, cursor);
+        return new RestResponse(true, "data transferred successfully");
+    }
+
     @GetMapping("/offset")
     RestResponse getDataWithOffset(@RequestParam(defaultValue = "0") int page,
                                    @RequestParam(defaultValue = "10") int size) {

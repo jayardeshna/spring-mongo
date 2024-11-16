@@ -12,4 +12,8 @@ public interface PersonService {
     DataTableResponse getPaginatedPersons(int page, int size);
 
     List<Person> getPaginatedPersonsWithCursor(String cursor, int size);
+
+    void transferDataWithOffset(int size);
+
+    void transferDataWithCursor(int size, String cursor);
 }
