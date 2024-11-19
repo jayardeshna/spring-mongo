@@ -7,7 +7,7 @@ import com.mongo.pagination.transfer.UserTransfer;
 import java.util.List;
 
 public interface PersonService {
-    void addPerson(List<UserTransfer> userTransfer);
+    void addPerson();
 
     DataTableResponse getPaginatedPersons(int page, int size);
 

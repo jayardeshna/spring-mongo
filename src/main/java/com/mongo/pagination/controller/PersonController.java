@@ -16,9 +16,9 @@ public class PersonController {
     private PersonService personService;
 
     @PostMapping("/add")
-    RestResponse addData(@RequestBody List<UserTransfer> userTransfer){
-        personService.addPerson(userTransfer);
-        return new RestResponse();
+    RestResponse addData(){
+        personService.addPerson();
+        return new RestResponse(true, "data added successfully");
     }
 
     @GetMapping("/transfer-data-offset")

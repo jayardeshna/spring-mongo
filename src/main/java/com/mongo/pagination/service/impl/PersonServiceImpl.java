@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,16 +89,31 @@ public class PersonServiceImpl implements PersonService {
         primaryMongoTemplate.remove(deleteQuery, "person");
     }
 
-    @Override
-    public void addPerson(List<UserTransfer> userTransfers) {
-        List<Person> personList = userTransfers.stream().map(userTransfer -> {
+
+    public void addPerson() {
+        List<Person> personList = new ArrayList<>();
+
+        for (int i = 0; i < 500000; i++) {
             Person person = new Person();
-            person.setEmail(userTransfer.getEmail());
-            person.setFirstName(userTransfer.getFirstName());
-            person.setLastName(userTransfer.getLastName());
-            return person;
-        }).collect(Collectors.toList());
+            person.setEmail("user" + i + "@example.com");
+            person.setFirstName(generateRandomString(5)); // Generates random 5-character first name
+            person.setLastName(generateRandomString(7));  // Generates random 7-character last name
+            personList.add(person);
+        }
+
         personRepositoryPrimary.saveAll(personList);
+    }
+
+    private String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(characters.charAt(random.nextInt(characters.length())));
+        }
+
+        return stringBuilder.toString();
     }
 
     @Override
