@@ -71,14 +71,12 @@ public class PersonServiceImpl implements PersonService {
         if (cursor != null) {
             query.addCriteria(Criteria.where("_id").gt(cursor));
         }
-
         query.limit(size);
-
         List<Person> batch = primaryMongoTemplate.find(query, Person.class);
-
         if (!batch.isEmpty()) {
             personRepositorySecondary.saveAll(batch);
         }
+        deleteBatchFromPrimary(batch);
     }
 
     private void deleteBatchFromPrimary(List<Person> batch) {
